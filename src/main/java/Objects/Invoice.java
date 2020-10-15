@@ -98,6 +98,12 @@ public class Invoice {
 	
 	
 	
+	public  void add_to_sum()
+	{
+		Sumator.addtoSum(Float.parseFloat(this.NETTOPRIJS));
+		
+		
+	}
 	
 	
 	

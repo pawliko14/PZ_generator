@@ -57,5 +57,20 @@ public class Provider {
 	}
 	
 	
+	public void showAllDataInObject()
+	{
+		System.out.println("Name: " + this.providerName + ", provider ID: " + this.provideID);
+	
+		for(int i  = 0 ; i< facturiate_list.size() ;i++)
+		{
+			System.out.println(facturiate_list.get(i).getFv_number());
+			facturiate_list.get(i).showInvoiceList();
+			System.out.println(" ");
+
+		}
+
+	}
+	
+	
 	
 }

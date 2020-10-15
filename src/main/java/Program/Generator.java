@@ -37,37 +37,26 @@ public class Generator {
 
     private void retrieve1() throws SQLException {
 
-    	
-       
-      	    
-      	 
-      	 //   PreparedStatement p = c.prepareStatement(sql);
-      	//    p.setString(1, customerId);
-      	 //   ResultSet rs = p.executeQuery(sql)); 
-    	
+    
 
         String query = "select LEVERANCIER, CFNAAM from aankoopfact a2\n" +
-                "WHERE a2.FACTURATIEDATUM  BETWEEN '"+Date_from+"' AND  '"+Date_to+"' \n" +
+                "WHERE a2.FACTURATIEDATUM  BETWEEN ? AND  ?  \n" +
                 "group by LEVERANCIER";
 
         try
         {
             PreparedStatement takeDate = myConn.prepareStatement(query);
-         //   takeDate.setString(1, Date_from);
-          //  takeDate.setString(2, Date_to);
-            ResultSet r = takeDate.executeQuery(query);
+            takeDate.setString(1, Date_from);
+            takeDate.setString(2, Date_to);
+            ResultSet r = takeDate.executeQuery();
 
             while(r.next())
             {
                 int leverancier = Integer.parseInt(r.getString(1));
-                String leverancier_description = r.getString(2);
-                //System.out.println("name + " + leverancier);
-                
+                String leverancier_description = r.getString(2);                
                 Provider obj = new Provider( leverancier_description,leverancier);
                 
                 provider_list.add(obj);
-                
-                
             }
 
 
@@ -77,31 +66,19 @@ public class Generator {
             	retrive2(provider_list.get(i).getProvideID(), i);
             }
             
-//          for(Provider l : provider_list)
-//          {
-//          	System.out.println(l.toString());
-//          }
-          
-//          for(Provider l : provider_list)
-//          {
-//          	l.getFacutriate_list();
-//          }
-          
           
             /*
              * 
              * 
              *  ponizej trzeba poprawic aby mozna bylo jednoznacznie printowac liste
              * 
-             */
+             */    
+            for(int i  = 0 ; i< provider_list.size();i++)
+            {
+            	provider_list.get(i).showAllDataInObject();
+
+            }
             
-//            for(int i  = 0 ; i< provider_list.size();i++)
-//            {
-//            	for(int j = 0 j < provider_list.)
-//                provider_list.get(1).getFacturiate_list().get(0).showInvoiceList();
-//
-//            }
-//            
             
             
             takeDate.close();
@@ -119,27 +96,23 @@ public class Generator {
     {
     
     	  String query = "select FACTURATIENUMMER from aankoopfact a2\r\n" + 
-    	  		"WHERE a2.FACTURATIEDATUM  BETWEEN '"+Date_from+"' AND '"+Date_to+"'\r\n" + 
-    	  		"and LEVERANCIER  = '"+leverancier_id+"' ";
+    	  		"WHERE a2.FACTURATIEDATUM  BETWEEN ? AND  ? \r\n" + 
+    	  		"and LEVERANCIER  = ? ";
         
     	  try {
     		  
     	  
              PreparedStatement takeDate = myConn.prepareStatement(query);
-          //   takeDate.setInt(1, leverancier_id);
-             ResultSet r = takeDate.executeQuery(query);
+             takeDate.setString(1, Date_from);
+             takeDate.setString(2, Date_to);
+             takeDate.setInt(3, leverancier_id);
+             ResultSet r = takeDate.executeQuery();
              
              while(r.next())
              {
                  int lev_id = Integer.parseInt(r.getString(1));              
-                 Facturiate obj = new Facturiate(lev_id);
-                 
-               
-
-                 
-                 provider_list.get(provider_list_id).insert( retrive3(lev_id, obj));
-                 
-            
+                 Facturiate obj = new Facturiate(lev_id);     
+                 provider_list.get(provider_list_id).insert( retrive3(lev_id, obj));            
              }
              
              
@@ -162,13 +135,14 @@ public class Generator {
 		 		"from aankoopfact a2\r\n" + 
 		 		"left join aankoopfactdetail a3 \r\n" + 
 		 		"on a2.FACTURATIENUMMER  = a3.FACTURATIENUMMER \r\n" + 
-		 		"where  a2.FACTURATIENUMMER  = '"+lev_id+"'";
+		 		"where  a2.FACTURATIENUMMER  = ?";
 		
 		  try {
     		  
 	    	  
 	             PreparedStatement takeDate = myConn.prepareStatement(query);
-	             ResultSet r = takeDate.executeQuery(query);
+	             takeDate.setInt(1, lev_id);
+	             ResultSet r = takeDate.executeQuery();
 	             
 	             while(r.next())
 	             {
@@ -184,7 +158,7 @@ public class Generator {
 	            	 String CFARTIKELOMSCHRIJVING= r.getString(9);
 	            	 
 	            	 Invoice obj = new Invoice(ORDERNUMMER,FACTURATIEDATUM,REGISTRATIEDATUM,CFPROJECTNUMMER,CFNAAM,NETTOPRIJS,Munt,CFARTIKELCODE,CFARTIKELOMSCHRIJVING);
-	            	 
+	            	 obj.add_to_sum();
 	            	 o.insert_to_invoiceList(obj);
 	            			 
 	            
@@ -203,6 +177,11 @@ public class Generator {
 		
 		  
 		  return o;
+	}
+	
+	public List<Provider>  getMainList()
+	{
+		return this.provider_list;
 	}
     
 }
