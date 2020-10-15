@@ -1,0 +1,104 @@
+package Objects;
+
+public class Invoice {
+
+	private String ORDERNUMMER;
+	private String FACTURIATEDATUM;
+	private String REGISTRATIEDATUM;
+	private String CFPROJECTNUMMER;
+	private String CFNAAM;
+	private String NETTOPRIJS;
+	private String MUNT;
+	private String CFARTIKELCODE;
+	private String CFARTIKELOMSCHRIJVING;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public Invoice(String oRDERNUMMER, String fACTURIATEDATUM, String rEGISTRATIEDATUM, String cFPROJECTNUMMER,
+			String cFNAAM, String nETTOPRIJS, String mUNT, String cFARTIKELCODE, String cFARTIKELOMSCHRIJVING) {
+		super();
+		ORDERNUMMER = oRDERNUMMER;
+		FACTURIATEDATUM = fACTURIATEDATUM;
+		REGISTRATIEDATUM = rEGISTRATIEDATUM;
+		CFPROJECTNUMMER = cFPROJECTNUMMER;
+		CFNAAM = cFNAAM;
+		NETTOPRIJS = nETTOPRIJS;
+		MUNT = mUNT;
+		CFARTIKELCODE = cFARTIKELCODE;
+		CFARTIKELOMSCHRIJVING = cFARTIKELOMSCHRIJVING;
+	}
+	public String getORDERNUMMER() {
+		return ORDERNUMMER;
+	}
+	public void setORDERNUMMER(String oRDERNUMMER) {
+		ORDERNUMMER = oRDERNUMMER;
+	}
+	public String getFACTURIATEDATUM() {
+		return FACTURIATEDATUM;
+	}
+	public void setFACTURIATEDATUM(String fACTURIATEDATUM) {
+		FACTURIATEDATUM = fACTURIATEDATUM;
+	}
+	public String getREGISTRATIEDATUM() {
+		return REGISTRATIEDATUM;
+	}
+	public void setREGISTRATIEDATUM(String rEGISTRATIEDATUM) {
+		REGISTRATIEDATUM = rEGISTRATIEDATUM;
+	}
+	public String getCFPROJECTNUMMER() {
+		return CFPROJECTNUMMER;
+	}
+	public void setCFPROJECTNUMMER(String cFPROJECTNUMMER) {
+		CFPROJECTNUMMER = cFPROJECTNUMMER;
+	}
+	public String getCFNAAM() {
+		return CFNAAM;
+	}
+	public void setCFNAAM(String cFNAAM) {
+		CFNAAM = cFNAAM;
+	}
+	public String getNETTOPRIJS() {
+		return NETTOPRIJS;
+	}
+	public void setNETTOPRIJS(String nETTOPRIJS) {
+		NETTOPRIJS = nETTOPRIJS;
+	}
+	public String getMUNT() {
+		return MUNT;
+	}
+	public void setMUNT(String mUNT) {
+		MUNT = mUNT;
+	}
+	public String getCFARTIKELCODE() {
+		return CFARTIKELCODE;
+	}
+	public void setCFARTIKELCODE(String cFARTIKELCODE) {
+		CFARTIKELCODE = cFARTIKELCODE;
+	}
+	public String getCFARTIKELOMSCHRIJVING() {
+		return CFARTIKELOMSCHRIJVING;
+	}
+	public void setCFARTIKELOMSCHRIJVING(String cFARTIKELOMSCHRIJVING) {
+		CFARTIKELOMSCHRIJVING = cFARTIKELOMSCHRIJVING;
+	}
+	
+	@Override
+	public String toString() {
+		return "Invoice [ORDERNUMMER=" + ORDERNUMMER + ", FACTURIATEDATUM=" + FACTURIATEDATUM + ", REGISTRATIEDATUM="
+				+ REGISTRATIEDATUM + ", CFPROJECTNUMMER=" + CFPROJECTNUMMER + ", CFNAAM=" + CFNAAM + ", NETTOPRIJS="
+				+ NETTOPRIJS + ", MUNT=" + MUNT + ", CFARTIKELCODE=" + CFARTIKELCODE + ", CFARTIKELOMSCHRIJVING="
+				+ CFARTIKELOMSCHRIJVING + "]";
+	}
+	
+	
+	
+	
+	
+	
+}
