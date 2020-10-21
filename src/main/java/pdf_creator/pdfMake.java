@@ -55,11 +55,7 @@ public class pdfMake {
 		        table.setHeaderRows(1);
 		        
 		        doc.add(table);
-		      
-		      
-		        
-		       // add_cell(list.get(i).getProviderName(),String.valueOf(list.get(i).getProvideID()),"","12","12",doc,table,1);
-		       
+		      		       
 		        add_cell(list.get(i).getProviderName(),String.valueOf(list.get(i).getProvideID()),doc,table,1);
 		        
 		        float sum_prijs = 0;      

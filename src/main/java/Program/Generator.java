@@ -38,9 +38,14 @@ public class Generator {
     private void retrieve1() throws SQLException {
 
     
-
-        String query = "select LEVERANCIER, CFNAAM from aankoopfact a2\n" +
-                "WHERE a2.FACTURATIEDATUM  BETWEEN ? AND  ?  \n" +
+//
+//        String query = "select LEVERANCIER, CFNAAM from aankoopfact a2\n" +
+//                "WHERE a2.FACTURATIEDATUM  BETWEEN ? AND  ?  \n" +
+//                "group by LEVERANCIER";
+    	
+    	// only AKROSTAL
+    	String query = "select LEVERANCIER, CFNAAM from aankoopfact a2\n" +
+                "WHERE a2.FACTURATIEDATUM  BETWEEN ? AND  ? and LEVERANCIER = '101057'  \n" +
                 "group by LEVERANCIER";
 
         try
@@ -64,6 +69,10 @@ public class Generator {
             for(int i =  0 ; i < provider_list.size(); i++)
             {
             	retrive2(provider_list.get(i).getProvideID(), i);
+            	
+            	
+            	
+            	
             }
             
           
