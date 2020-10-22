@@ -3,6 +3,7 @@ package Objects;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class Generator_bestelling {
     private String Date_from;
     private String Date_to;
 	private List<bestelling> bestelling_list;
-	private String DEST = "C://Users/el08/Desktop/testowy_dokument.pdf";
+	private String DEST = Filesave.getPathToSaveHours();
 	
 	private int c1,c2,c3;
 	
@@ -49,6 +50,9 @@ public class Generator_bestelling {
 
 	public Generator_bestelling(String d1, String d2) throws DocumentException, IOException
 	{
+		Filesave.createDirectory();
+		Filesave.setFilename("testowy_dokument.pdf");
+		Filesave.createFile();
 		 c1 = 210;
 		 c2 = 210;
 		 c3 = 210;
@@ -100,25 +104,20 @@ public class Generator_bestelling {
 		Date date = new Date(System.currentTimeMillis());
 		String curdate = formatter.format(date);
 		
-		   doc.setPageSize(PageSize.A3.rotate());
-		   PdfWriter.getInstance(doc, new FileOutputStream(DEST));
+		   doc.setPageSize(PageSize.A2.rotate());
+		   PdfWriter.getInstance(doc, new FileOutputStream(Filesave.getFUllFilePath()));
 		   doc.open();
-		   doc.add(new Paragraph("Raport Brakujacych fakturacji w danym przedziale czasowym ",FontFactory.getFont(FontFactory.TIMES_ROMAN,15, Font.ITALIC, BaseColor.BLACK)));
+		   doc.add(new Paragraph("Raport Brakujacych fakturacji w danym przedziale czasowym ",FontFactory.getFont(FontFactory.TIMES_ROMAN,17, Font.ITALIC, BaseColor.BLACK)));
 		   doc.add(new Paragraph("Data zamowien od :  "+Date_from+"  do   "+Date_to+"",FontFactory.getFont(FontFactory.TIMES_ROMAN,15, Font.ITALIC, BaseColor.BLACK)));
 		   doc.add(new Paragraph("\n"));
 		   doc.add(new Paragraph("Raport wygenerowany: " + curdate, FontFactory.getFont(FontFactory.TIMES_ROMAN,15, Font.ITALIC, BaseColor.BLACK)));
 		   doc.add(new Paragraph("\n"));
+		   doc.add(new Paragraph("Adnotacja:  Program odczytuje tylko takie artykuly, ktore w HACOSOFT maja w kolumnie 'DOSTARCZONE'(DELIVERED) wartosc inna niz '0'  " , FontFactory.getFont(FontFactory.TIMES_ROMAN,15, Font.ITALIC, BaseColor.BLACK)));
+		   doc.add(new Paragraph("Artykul z dostarczonym == '0' nie ma wygenerowanego dokumentu PZ  ", FontFactory.getFont(FontFactory.TIMES_ROMAN,15, Font.ITALIC, BaseColor.BLACK)));
 		   doc.add(new Paragraph("\n"));
 
-		 // invalid query - missing elements
-//    	String query = "select b2.leverancier ,b2.ORDERNUMMER ,b2.STATUSCODE , a2.CFNAAM from bestelling b2 \r\n" + 
-//    			"		left join aankoopfact a2 \r\n" + 
-//    			"		on b2.leverancier  = a2.LEVERANCIER \r\n" + 
-//    			"		where b2.BESTELDATUM  between ? and ? \r\n" + 
-//    			"		and length(b2.leverancier) >= 6\r\n" + 
-//    			"		group by b2.leverancier ";
     	
-    	String query = "		select  b2.leverancier ,b2.ORDERNUMMER ,b2.STATUSCODE , a2.NAAM ,b2.BESTELDATUM from bestelling b2 \r\n" + 
+    	String query = "		select  b2.leverancier ,b2.ORDERNUMMER ,b2.STATUSCODE , a2.NAAM ,b2.BESTELDATUM,b2.LEVERDATUM from bestelling b2 \r\n" + 
     			"		left join leverancier a2 \r\n" + 
     			"		on b2.leverancier  = a2.LEVERANCIERNR \r\n" + 
     			"		where b2.BESTELDATUM  between ? and  ? \r\n" + 
@@ -139,10 +138,11 @@ public class Generator_bestelling {
                 String statuscode = r.getString(3);
                 String  cfnaam = r.getString(4);
                 String  BESTELDATUM = r.getString(5);
+                String LEVERDATUM = r.getString(6);
 
                 
                 
-                bestelling obj = new bestelling( leverancier,ordernummer,statuscode,cfnaam,BESTELDATUM);
+                bestelling obj = new bestelling( leverancier,ordernummer,statuscode,cfnaam,BESTELDATUM,LEVERDATUM);
                 
                 bestelling_list.add(obj);
             }      
@@ -153,7 +153,7 @@ public class Generator_bestelling {
             System.out.println("list begin: ");
             for(int i = 0 ; i < bestelling_list.size(); i++)
             {
-            	retrive2(bestelling_list.get(i).getLeverancier(),bestelling_list.get(i).getOrdernummer(),bestelling_list.get(i).getCfnaam(), bestelling_list.get(i).getBestelldatum() );
+            	retrive2(bestelling_list.get(i).getLeverancier(),bestelling_list.get(i).getOrdernummer(),bestelling_list.get(i).getCfnaam(), bestelling_list.get(i).getBestelldatum(),bestelling_list.get(i).getLeverdatum() );
             }
             
         }
@@ -165,13 +165,55 @@ public class Generator_bestelling {
     
 	}
 	
-	public void retrive2(int leverancier, String ordernummer, String Cfnaam,String besteldatum )
+
+	
+	// remove leverdatum, not used here
+	private String getReceptie(int leverancier, String ordernummer, String articel) {
+				
+		String  receptie  = null;
+
+		
+		String query =  "select BONNR from receptiedetail r \r\n" + 
+				"		where LEVERANCIER  = ? \r\n" + 
+				"		and ARTIKELCODE  = ? \r\n" +
+				"		and ORDERNUMMER  = ? ";
+		
+		try
+		{
+		    PreparedStatement takeDate = myConn.prepareStatement(query);
+            takeDate.setInt(1, leverancier);
+            takeDate.setString(2, articel);
+            takeDate.setString(3, ordernummer);
+            ResultSet rs = takeDate.executeQuery();
+            
+            if (rs.next() == false) {
+                System.out.println("Resultset is empty! " );
+              } else
+              {
+            	  receptie = rs.getString(1);
+              }
+            rs.close();
+            takeDate.close();
+		}
+		catch(Exception e )
+		{
+			e.printStackTrace();	
+		}
+		
+		
+		
+		return receptie;
+	}
+	
+	public void retrive2(int leverancier, String ordernummer, String Cfnaam,String besteldatum ,String leverdatum)
 	{
 		PdfPTable table2 ;
 		PdfPTable table3 = null;
 		boolean table_created =false;
+				
+
 		
-		String query = "select ARTIKELCODE, SEQUENTIE,BESTELD,GELEVERD,GEFACTUREERD , concat(AFDELING , '/', AFDELINGSEQ ) as AFDELINGS, eenheidsprijs , suma,MUNT  from bestellingdetail b \r\n" + 
+		String query = "select ARTIKELCODE, SEQUENTIE,BESTELD,GELEVERD,GEFACTUREERD , concat(AFDELING , '/', AFDELINGSEQ ) as AFDELINGS, eenheidsprijs , suma,MUNT,LEVERINGSDATUMINGAVERECEPTIE  from bestellingdetail b \r\n" + 
 				"		where leverancier  = ? \r\n" + 
 				"		and GELEVERD  > 0 \r\n" + 
 				"		and GELEVERD  <> GEFACTUREERD\r\n" + 
@@ -194,7 +236,7 @@ public class Generator_bestelling {
                 	{                		
         		        doc.add(Chunk.NEWLINE);   
 
-                		table2  = new PdfPTable(2);
+                		table2  = new PdfPTable(3);
                 		PdfPCell cell1 = new PdfPCell();
                 				cell1.setBackgroundColor(new BaseColor(c1,c2,c3));
                 				Paragraph p = new Paragraph("Supplier name  : "  + Cfnaam , font_header);
@@ -205,13 +247,21 @@ public class Generator_bestelling {
                 				Paragraph p2 = new Paragraph("Order Date  : "  + besteldatum , font_header);
         						p2.setAlignment(Element.ALIGN_CENTER);
                     		cell2.addElement(p2);
+                    	PdfPCell cell3 = new PdfPCell();
+                    		cell3.setBackgroundColor(new BaseColor(c1,c2,c3));
+            				Paragraph p3 = new Paragraph("Delivery Date(theoretical) : "  + leverdatum , font_header);
+            				p3.setAlignment(Element.ALIGN_CENTER);
+            				cell3.addElement(p3);
                 		
+
+            				
         		        table2.addCell(cell1);
         		        table2.addCell(cell2);
+        		        table2.addCell(cell3);
 
         		        doc.add(table2);
         		       
-        		       table3  = new PdfPTable(11);
+        		       table3  = new PdfPTable(13);
         		       table3.addCell("Supplier Nr");
         		       table3.addCell("Order Nr");
         		       table3.addCell("Order Sequency");
@@ -223,12 +273,15 @@ public class Generator_bestelling {
         		       table3.addCell("Prices per item");
         		       table3.addCell("Prices summary");
         		       table3.addCell("Currency");
+        		       table3.addCell("PZ Number");
+        		       table3.addCell("Real Del. Date");
+
 
         		       table_created = true;
                 	}
                   
                   
-                  String data = rs.getString(1);
+                  String articel_code = rs.getString(1);
                   String seq = rs.getString(2);
                   String BESTELD =  rs.getString(3);
                   String GELEVERD =  rs.getString(4);
@@ -237,16 +290,17 @@ public class Generator_bestelling {
                   String eenhijdprijs =  rs.getString(7);
                   String SUMA =  rs.getString(8);
                   String MUNT =  rs.getString(9);
-
+                  String receptie = getReceptie(leverancier,ordernummer,articel_code);
+                  String LEVERINGSDATUMINGAVERECEPTIE = rs.getString(10);
                   
                   
-                  System.out.println("leverancier: " + leverancier + ", ordernummer: " + ordernummer + ", seq: "+ seq + "  -> data in set : " + data );
+                  System.out.println("leverancier: " + leverancier + ", ordernummer: " + ordernummer + ", seq: "+ seq + "  -> data in set : " + articel_code );
                   
                   List<String> objects_to_print = new ArrayList<String>();
                   	objects_to_print.add(String.valueOf(leverancier));
                   	objects_to_print.add(ordernummer);
                   	objects_to_print.add(seq);
-                  	objects_to_print.add(data);
+                  	objects_to_print.add(articel_code);
                   	objects_to_print.add(BESTELD);
                   	objects_to_print.add(GELEVERD);
                   	objects_to_print.add(GEFACTUREERD);
@@ -254,14 +308,19 @@ public class Generator_bestelling {
                   	objects_to_print.add(eenhijdprijs);
                   	objects_to_print.add(SUMA);
                   	objects_to_print.add(MUNT);
+                  	objects_to_print.add(receptie);
+                  	objects_to_print.add(LEVERINGSDATUMINGAVERECEPTIE);
 
                   	
                   	for(int x = 0 ; x < objects_to_print.size();x++)
                   	{
-                  		PdfPCell cell = new PdfPCell();
-		  				Paragraph p = new Paragraph(objects_to_print.get(x) , font_values);
-		  				p.setAlignment(Element.ALIGN_CENTER);
-		  				cell.addElement(p);
+              	 		PdfPCell cell = new PdfPCell();
+
+      
+			  				Paragraph p = new Paragraph(objects_to_print.get(x) , font_values);
+			  				p.setAlignment(Element.ALIGN_CENTER);
+			  				cell.addElement(p);
+                  		
 		  				
 		                table3.addCell(cell);
                   	}
@@ -282,5 +341,8 @@ public class Generator_bestelling {
             e.printStackTrace();
         }
 	}
+
+
+
 	
 }

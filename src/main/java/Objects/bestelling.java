@@ -7,9 +7,31 @@ public class bestelling {
 	private String statuscode;
 	private String cfnaam;
 	private String bestelldatum;
+	private String Leverdatum;
 	
 	
 	
+	@Override
+	public String toString() {
+		return "bestelling [leverancier=" + leverancier + ", ordernummer=" + ordernummer + ", statuscode=" + statuscode
+				+ ", cfnaam=" + cfnaam + ", bestelldatum=" + bestelldatum + ", Leverdatum=" + Leverdatum + "]";
+	}
+	public bestelling(int leverancier, String ordernummer, String statuscode, String cfnaam, String bestelldatum,
+			String leverdatum) {
+		super();
+		this.leverancier = leverancier;
+		this.ordernummer = ordernummer;
+		this.statuscode = statuscode;
+		this.cfnaam = cfnaam;
+		this.bestelldatum = bestelldatum;
+		Leverdatum = leverdatum;
+	}
+	public String getLeverdatum() {
+		return Leverdatum;
+	}
+	public void setLeverdatum(String leverdatum) {
+		Leverdatum = leverdatum;
+	}
 	public String getBestelldatum() {
 		return bestelldatum;
 	}
@@ -40,22 +62,7 @@ public class bestelling {
 	public void setCfnaam(String cfnaam) {
 		this.cfnaam = cfnaam;
 	}
-	public bestelling(int leverancier, String ordernummer, String statuscode, String cfnaam, String bestelldatum) {
-		super();
-		this.leverancier = leverancier;
-		this.ordernummer = ordernummer;
-		this.statuscode = statuscode;
-		this.cfnaam = cfnaam;
-		this.bestelldatum = bestelldatum;
-	}
-	@Override
-	public String toString() {
-		return "bestelling [leverancier=" + leverancier + ", ordernummer=" + ordernummer + ", statuscode=" + statuscode
-				+ ", cfnaam=" + cfnaam + ", bestelldatum=" + bestelldatum + "]";
-	}
 
-	
-	
 	
 	
 	
