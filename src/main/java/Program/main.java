@@ -23,7 +23,6 @@ public class main {
 	public static void main(String[] args) throws SQLException, DocumentException, IOException {
 
 		
-		setPrintStream();
 
 //        Generator prog = new Generator("2020-09-01", "2020-09-30");
 //        prog.run();
@@ -40,6 +39,8 @@ public class main {
  *  glowny program
  */
 		Generator_bestelling gen  = new Generator_bestelling(getCurrdateMinus30Days(), getCurdate());
+		setPrintStream();
+
 		gen.run();
 		
 		gen.show_bestelling_list();
