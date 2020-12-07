@@ -3,7 +3,6 @@ package Objects;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.sound.midi.SysexMessage;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -24,7 +22,6 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -39,20 +36,17 @@ public class Generator_bestelling {
     private String Date_from;
     private String Date_to;
 	private List<bestelling> bestelling_list;
-	private String DEST = Filesave.getPathToSaveHours();
+	
 	
 	private int c1,c2,c3;
 	
+	private String FullFilePathWithName;
 	private static Font font_header;
 	private static Font font_values;
-
-
-
-	public Generator_bestelling(String d1, String d2) throws DocumentException, IOException
+	
+	
+	private void setFonts() throws DocumentException, IOException
 	{
-		Filesave.createDirectory();
-		Filesave.setFilename("testowy_dokument.pdf");
-		Filesave.createFile();
 		 c1 = 210;
 		 c2 = 210;
 		 c3 = 210;
@@ -60,18 +54,24 @@ public class Generator_bestelling {
 		
 		
 		   BaseFont bf = BaseFont.createFont(
-                   BaseFont.TIMES_ROMAN,
-                   BaseFont.CP1252,
-                   BaseFont.EMBEDDED);
+                  BaseFont.TIMES_ROMAN,
+                  BaseFont.CP1252,
+                  BaseFont.EMBEDDED);
 		   
 		   BaseFont bf_values = BaseFont.createFont(
-                   BaseFont.TIMES_ROMAN,
-                   BaseFont.CP1252,
-                   BaseFont.EMBEDDED);
+                  BaseFont.TIMES_ROMAN,
+                  BaseFont.CP1252,
+                  BaseFont.EMBEDDED);
 	        
 		font_header = new Font(bf, 15);
 		font_values = new Font(bf_values,12);
-		
+	}
+
+	public Generator_bestelling(String d1, String d2, Filesave file) throws DocumentException, IOException
+	{
+		this.FullFilePathWithName = file.getFullFilePathAndName();
+		setFonts();
+
 		doc = new Document();
 		Date_from  =d1;
     	Date_to = d2;
@@ -105,7 +105,7 @@ public class Generator_bestelling {
 		String curdate = formatter.format(date);
 		
 		   doc.setPageSize(PageSize.A2.rotate());
-		   PdfWriter.getInstance(doc, new FileOutputStream(Filesave.getFUllFilePath()));
+		   PdfWriter.getInstance(doc, new FileOutputStream(FullFilePathWithName));
 		   doc.open();
 		   doc.add(new Paragraph("Raport Brakujacych fakturacji w danym przedziale czasowym ",FontFactory.getFont(FontFactory.TIMES_ROMAN,17, Font.ITALIC, BaseColor.BLACK)));
 		   doc.add(new Paragraph("Data zamowien od :  "+Date_from+"  do   "+Date_to+"",FontFactory.getFont(FontFactory.TIMES_ROMAN,15, Font.ITALIC, BaseColor.BLACK)));

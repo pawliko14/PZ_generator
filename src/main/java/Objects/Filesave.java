@@ -9,30 +9,35 @@ import java.util.Calendar;
 
 public class Filesave {
 
-	//depoloy purpose
-	private static String PathToSaveHours= "//192.168.90.203/Logistyka/Bookkeeping/PZ_braki";
 
+	private  String PathToSaveHours;
+	private  String filename;
+	private  String fullFilePathAndName;
 	
-//	//testing purpose
-//	private static String PathToSaveHours = "C://Users/el08/Desktop";
-
-	private static String filename = "";
 	
-	public static void setFilename(String f)
-	{
-		filename = f;
+	
+	public Filesave(String path, String fileName) {
+		this.PathToSaveHours = path;
+		this.filename = fileName;
+		
+		this.createDirectory();
+		this.createFile();
+		
+	}	
+	
+	public String getFullFilePathAndName() {
+		return this.fullFilePathAndName;
 	}
 	
 	
-	
-	public static String getPathToSaveHours(){
+	public  String getPathToSaveHours(){
 		return PathToSaveHours;
 	}
 	
 
 	
-	public static void createDirectory(){
-		String path = getPath();
+	public  void createDirectory(){
+		String path = this.getPath();
 		File theDir = new File(path);
 		// if the directory does not exist, create it
 		if (!theDir.exists()) {
@@ -40,39 +45,39 @@ public class Filesave {
 		        theDir.mkdir();
 		    } 
 		    catch(SecurityException se){
-		        //handle it
+		        System.out.println(se);
+		       
 		    }
 		}
 	}
 
-public static File createFile(){
-	String path = getPath();
-	SimpleDateFormat godz = new SimpleDateFormat("HH;mm");
-	Calendar date = Calendar.getInstance();
-	
-	File f = new File(path+filename);
-	if(f.exists() && !f.isDirectory()){
-		f = new File(path+ godz.format(date.getTime())+" "+filename);
+	public  File createFile(){
+		String path = this.getPath();
+		SimpleDateFormat godz = new SimpleDateFormat("HH;mm");
+		Calendar date = Calendar.getInstance();
+		
+		File f = new File(this.getPath()+"/"+filename);
+		
+		this.fullFilePathAndName = this.getPath() + godz.format(date.getTime())+" "+filename;
+		
+		if(f.exists() && !f.isDirectory()){
+			f = new File(this.fullFilePathAndName);
+		}
+		
+		return f;
+		
 	}
-	
-	return f;
-	
-}
-
-public static String getFUllFilePath()
-{
-	return  getPath()+ "/" + filename; 
-}
 
 
 
-public static String getPath(){
+public  String getPath() {
 	Calendar calendar = Calendar.getInstance();
 	SimpleDateFormat doNazwy = new SimpleDateFormat("yyyy.MM.dd");
-	String path = Filesave.getPathToSaveHours()+"/"+doNazwy.format(calendar.getTime())+"/";
+	String path = this.PathToSaveHours +"/" + doNazwy.format(calendar.getTime()) +"/";
 	
 	return path;
 }
+
 
 
 

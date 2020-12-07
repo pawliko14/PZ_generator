@@ -18,9 +18,13 @@ import Objects.Generator_bestelling;
 
 public class main {
 
-	//	private  static List<Provider> copy_of_list;
+	//  "//192.168.90.203/Logistyka/Bookkeeping/PZ_braki" ,   "testowy_dokument.pdf" <- deploy purpose
+	static Filesave file1 = new Filesave("C://Users/el08/Desktop","testowy_dokument.pdf");
+	static Filesave file2 = new Filesave("C://Users/el08/Desktop","testowy_dokument2.pdf");
+
 	
 	public static void main(String[] args) throws SQLException, DocumentException, IOException {
+		setPrintStream();
 
 		
 
@@ -35,17 +39,27 @@ public class main {
 		
 		
 		
+		
 /*
- *  glowny program
+ *  Main Program
  */
-		Generator_bestelling gen  = new Generator_bestelling(getCurrdateMinus30Days(), getCurdate());
-		setPrintStream();
-
-		gen.run();
 		
-		gen.show_bestelling_list();
+		
+	//	Generator_bestelling gen  = new Generator_bestelling(getCurrdateMinus30Days(), getCurdate(),file1);
+	//	gen.run();	
+	//	gen.show_bestelling_list();
+		
+/*
+ * 2nd Program		
+ */
+		
+		
+		Generator_bestelling gen2  = new Generator_bestelling(getCurrdateMinus30Days(), getCurdate(),file2);
+		gen2.run();	
+		gen2.show_bestelling_list();
 		
 
+		
 		System.out.println("program finished");
 		
 		System.exit(0);
@@ -56,7 +70,7 @@ public class main {
 
 	private static void setPrintStream() throws FileNotFoundException {
 
-		PrintStream fileOut = new PrintStream(Filesave.getPath()+ "/out.txt" );
+		PrintStream fileOut = new PrintStream(file1.getPath()+ "/out.txt" );
 		System.setOut(fileOut);
 		System.setErr(fileOut);
 		
@@ -70,7 +84,7 @@ public class main {
 		    Calendar c1 = Calendar.getInstance();
 
 		    // now add 30 day in Calendar instance 
-		    c1.add(Calendar.DAY_OF_YEAR, -30);
+		    c1.add(Calendar.DAY_OF_YEAR, -7);
 		    df = new SimpleDateFormat("yyyy-MM-dd");
 		    Date resultDate = c1.getTime();
 		    String dueDate = df.format(resultDate);
